@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  ssh-server:
+    container_name: ${DOCKER_PROJECT_TITLE}-ssh-server
+    restart: unless-stopped
+    build:
+      context: ./ssh-server/docker
+      dockerfile: shell.docker
+    volumes:
+      - .:/app
+    ports:
+      - "${DOCKER_SSH_EXTERNAL_PORT}:22"
+  postgres:
+    container_name: ${DOCKER_PROJECT_TITLE}-postgres
+    restart: unless-stopped
+    image: postgres:14-alpine
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: app
+    ports:
+      - "${DOCKER_POSTGRESQL_EXTERNAL_PORT}:5432"
+
+volumes:
+  postgres:
+  gradle_cache:

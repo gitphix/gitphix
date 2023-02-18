@@ -1,0 +1,12 @@
+# Build the Java application in a separate multi-stage build
+FROM openjdk:17-alpine AS build
+WORKDIR /app
+RUN ./gradlew build
+
+# Copy the built Java application binary to the target image
+FROM linuxserver/openssh-server
+WORKDIR /app
+COPY --from=build /app/build/libs/app.jar .
+
+# Start the SSH server and run the Java application
+CMD /usr/sbin/sshd && java -jar app.jar
